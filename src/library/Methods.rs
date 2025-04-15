@@ -1,6 +1,5 @@
 #![allow(non_snake_case, dead_code)]
 
-
 use super::Types::ZenError;
 use colored::Colorize;
 
@@ -12,6 +11,8 @@ pub fn Str(val: &str) -> String {
 macro_rules! Print {
     () => {
         println!();
+
+        
     };
 
     ($($arg:expr),*) => {
@@ -19,6 +20,25 @@ macro_rules! Print {
 
         $(
             acc.push(format!("{}", $arg));
+        )*
+
+        println!("{}", acc.join(" "));
+    };
+}
+
+#[macro_export]
+macro_rules! PrintVec {
+    () => {
+        println!();
+    };
+
+    ($($arg:expr),*) => {
+        let mut acc: Vec<String> = Vec::new();
+
+        $(
+            for x in $arg {
+                acc.push(format!("{}", x));
+            }
         )*
 
         println!("{}", acc.join(" "));

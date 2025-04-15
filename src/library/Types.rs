@@ -20,8 +20,11 @@ pub enum Object {
     Number(Number),
     Text(Text),
     Array(Array),
-    Bool(Boolean),
+    Bool(Boolean)
 }
+
+#[derive(Debug, Clone, PartialEq)]
+pub struct Instruction(pub String, pub Vec<Object>);
 
 #[derive(Debug, Clone)]
 pub struct ZenNamedParameter {
@@ -90,7 +93,6 @@ impl<'a> Parsable<'a, char, Object, Simple<char>> for Number {
                 .map(|((negative, int), frac)| {
                     Object::from(format!("{}{}.{}", negative.unwrap_or("+"), int, frac.unwrap_or("0".to_owned())).parse::<f64>().unwrap())
                 })
-                .padded()
         )
     }
 }
@@ -232,12 +234,6 @@ impl New<bool> for Boolean {
     }
 }
 
-impl Display for Object {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(f, "{:?}", self)
-    }
-}
-
 impl Display for Number {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         write!(f, "{}", self.value)
@@ -253,5 +249,16 @@ impl Display for Text {
 impl Display for Boolean {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         write!(f, "{}", self.value)
+    }
+}
+
+impl Display for Object {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Object::Array(val) => write!(f, "{:?}", val),
+            Object::Bool(val) => write!(f, "{}", val),
+            Object::Number(val) => write!(f, "{}", val),
+            Object::Text(val) => write!(f, "{}", val),
+        }
     }
 }

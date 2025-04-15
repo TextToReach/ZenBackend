@@ -2,8 +2,8 @@ mod library;
 mod parsers;
 
 use chumsky::{prelude::*, primitive::Choice, Parser};
-use library::Types::Object;
-use parsers::instructions::Kit;
+use library::Types::{Instruction, Object};
+use parsers::instructions::{yazdir, Kit};
 use clap::{Parser as ClapParser, Subcommand};
 
 /// Ana CLI aracı
@@ -28,18 +28,31 @@ enum Commands {
     },
 }
 
-fn Lexer() -> Choice<[Box<dyn Parser<char, Object, Error = Simple<char>>>; 2], Simple<char>>{
+/* fn Lexer() -> Choice<[Box<dyn Parser<char, Object, Error = Simple<char>>>; 2], Simple<char>>{
     choice([
-        Object::parser(),
-        Kit::parser()
+        Object::parser()
     ])
+} */ 
+
+fn process(AST: Instruction){
+    let instruction = AST.0.as_str();
+    let args = AST.1;
+    match instruction {
+        "yazdır" => {
+            PrintVec!(args);
+        }
+        _ => {}
+    }
 }
 
 fn run(file: String, verbose: bool) {
     let input = ReadFile!(file);
+    let input = input.split("\n").collect::<Vec<&str>>()[0];
 
-    match Lexer().parse(input) {
-        Ok(result) => println!("Parse başarılı: {:#?}", result),
+    match Kit::parser().parse(input) {
+        Ok(result) => {
+            process(result)
+        },
         Err(errors) => {
             for error in errors {
                 println!("Hata: {:?}", error);

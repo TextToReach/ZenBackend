@@ -2,18 +2,12 @@
 
 use chumsky::prelude::*;
 
-use crate::library::Types::Object;
+use crate::library::Types::{Instruction, Object};
 
-pub fn parser() -> Box<impl Parser<char, Object, Error = Simple<char>>> {
+pub fn parser() -> Box<impl Parser<char, Instruction, Error = Simple<char>>> {
     Box::new(just("yazdır")
         .padded()
-        .ignore_then(Object::parser().separated_by(just(' ')).at_least(1))
-        .map(Object::from))
-
-
-    // just("yazdır")
-    //     .padded()
-    //     .ignore_then(
-    //          crate::string::parser().separated_by(just(' ')).at_least(1)
-    //      ).map(ZenType::from)
+        .then(Object::parser().separated_by(just(' ')).at_least(1))
+        .map(|(ins, arg)| Instruction(ins.to_owned(), arg))
+    )
 }
